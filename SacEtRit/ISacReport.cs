@@ -8,6 +8,6 @@ namespace SacEtRit
 {
     interface ISacReport
     {
-        void Create(double heures, string developpeur, string client, out int totalJouors, int? mois = null, string outPath = null);
+        void Create(double heures, string developpeur, string client, out int totalJours, int? mois = null, string outPath = null);
     }
 }

@@ -11,7 +11,16 @@ namespace SacEtRit
 {
     public class SacReport : ISacReport
     {
-        public void Create(double heures, string developpeur, string client, out int totalJouors, int? mois = null, string outPath = null)
+        /// <summary>
+        /// Créer le rapport de Suivi d'Activité en format XLSX pour ITS Group
+        /// </summary>
+        /// <param name="heures">Nombre d'heures hebdomadaires du contrar de travail (35, 37, 38.5 etc...)</param>
+        /// <param name="developpeur">Nom et prénom du collaborateur</param>
+        /// <param name="client">Le client de la mission</param>
+        /// <param name="totalJours">Si different de null on place ici le nombre de jours travaillés dans le mois</param>
+        /// <param name="mois">Le mois pour lequel on genère le rapport, si null on prend le mois en cours</param>
+        /// <param name="outPath">La chemin dans lequel on place le rapport .xlsx, si null on prend le path du .exe</param>
+        public void Create(double heures, string developpeur, string client, out int totalJours, int? mois = null, string outPath = null)
         {
             MemoryStream ms = new MemoryStream(Resource1.Suivi_Activite_Mensuel);
 
@@ -34,7 +43,7 @@ namespace SacEtRit
             int h = (int)daily;
             int m = (int)Math.Round((daily - (double)h)*60.0);
             TimeSpan ts = new TimeSpan(h, m, 0);
-            totalJouors = 0;
+            totalJours = 0;
 
             using (ExcelPackage package = new ExcelPackage(ms))
             {
@@ -88,7 +97,7 @@ namespace SacEtRit
                         worksheet.Cells[$"H{I + 2}"].Value = $"MI: {week}";
                         worksheet.Cells[$"H{I + 3}"].Style.Numberformat.Format = "[H]\"h\"MM";
 
-                        ++totalJouors;
+                        ++totalJours;
                     }
 
                     dt = dt.AddDays(1);
