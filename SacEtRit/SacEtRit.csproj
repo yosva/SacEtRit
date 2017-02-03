@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\CalendarHelper.cs" />
     <Compile Include="Helpers\HolidaysHelper.cs" />
     <Compile Include="ISacReport.cs" />
     <Compile Include="Program.cs" />

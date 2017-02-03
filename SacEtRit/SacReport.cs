@@ -28,6 +28,9 @@ namespace SacEtRit
                 mois = DateTime.Now.Month;
 
             DateTime dt = new DateTime(DateTime.Now.Year, mois.Value, 1);
+            DateTime lastDate = new DateTime(DateTime.Now.Year, mois.Value, DateTime.DaysInMonth(DateTime.Now.Year, mois.Value));
+
+            var holydays = Helpers.HolidaysHelper.GetRangeDate(dt, lastDate);
 
             CultureInfo ci = new CultureInfo("fr-FR");
 
@@ -55,7 +58,7 @@ namespace SacEtRit
                     {
                         worksheet = package.Workbook.Worksheets["Mensuel"];//.First(); //peut être un bug dans EPPlus, la première fois qu'on essaye de lire le sheet une exception se lève avec message "an item with the same key has already been added"
                         ready = true;
-                        ///TODO faire en sorte qu'on arrète la boucle si depuis une limiete de temps on ne peut toujours pas lire le sheet...jusqu'à présent ça n'as pas arrivé
+                        ///TODO faire en sorte qu'on arrète la boucle si depuis un certain temps on n'arrive toujours pas à lire le sheet...quoique jusqu'à présent ça n'as pas arrivé
                     }
                     catch (Exception)
                     {
@@ -69,17 +72,17 @@ namespace SacEtRit
                 int firstWeekOfMonth = DateTimeFormatInfo.CurrentInfo.Calendar.GetWeekOfYear(dt, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
 
                 worksheet.Cells["D3"].Value = "NOM: " + developpeur;
-                worksheet.Cells["E4"].Value = monthName;
+                worksheet.Cells["E3"].Value = "Mois: " + monthName;
+
+                int offset = (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday) ? 6 : 0;
 
                 do
                 {
                     if (dt.DayOfWeek != DayOfWeek.Saturday && dt.DayOfWeek != DayOfWeek.Sunday)
                     {
                         int week = DateTimeFormatInfo.CurrentInfo.Calendar.GetWeekOfYear(dt, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-
                         int weekOfMonth = week - firstWeekOfMonth + 1;
-
-                        int I = 6 * weekOfMonth;
+                        int I = 6 * weekOfMonth - offset;
 
                         string weekCell = $"A{I}";
                         if(worksheet.Cells[weekCell].Value == null || string.IsNullOrEmpty(worksheet.Cells[weekCell].Value.ToString()))
@@ -89,10 +92,12 @@ namespace SacEtRit
 
                         worksheet.Cells[I, (int)dt.DayOfWeek+1].Value = $"{dt.ToString("dddd", ci).ToUpper()} {dt.Day}";
 
-                        worksheet.Cells[I + 2, (int)dt.DayOfWeek + 1].Value = $"MI ({client})";
+                        bool isHolyday = holydays.Contains(dt);
+
+                        worksheet.Cells[I + 2, (int)dt.DayOfWeek + 1].Value = isHolyday ? "JF" : $"MI ({client})";
 
                         worksheet.Cells[I + 3, (int)dt.DayOfWeek + 1].Style.Numberformat.Format = "[H]\"h\"MM";
-                        worksheet.Cells[I + 3, (int)dt.DayOfWeek + 1].Value = ts;
+                        worksheet.Cells[I + 3, (int)dt.DayOfWeek + 1].Value = isHolyday ? new TimeSpan(0) : ts;
 
                         worksheet.Cells[$"H{I + 2}"].Value = $"MI: {week}";
                         worksheet.Cells[$"H{I + 3}"].Style.Numberformat.Format = "[H]\"h\"MM";

@@ -75,7 +75,7 @@ namespace SacEtRit.Helpers
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
         /// <returns></returns>
-        public static IEnumerable<HolidayViewModel> GetRangeDate(DateTime start, DateTime end)
+        public static IEnumerable<DateTime> GetRangeDate(DateTime start, DateTime end)
         {
             var holidays = new List<HolidayViewModel>();
 
@@ -84,7 +84,7 @@ namespace SacEtRit.Helpers
                 holidays.AddRange(GetAll(i));
             }
 
-            return holidays.Where(w => w.Date >= start && w.Date <= end);
+            return holidays.Where(w => w.Date >= start && w.Date <= end).Select(hm => hm.Date);
         }
 
         public struct HolidayViewModel
