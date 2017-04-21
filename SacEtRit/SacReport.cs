@@ -1,16 +1,18 @@
 ﻿using OfficeOpenXml;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SacEtRit
 {
     public class SacReport : ISacReport
     {
+        public SacReport()
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-FR");
+        }
+
         /// <summary>
         /// Créer le rapport de Suivi d'Activité en format XLSX pour ITS Group
         /// </summary>
@@ -32,9 +34,7 @@ namespace SacEtRit
 
             var holydays = Helpers.HolidaysHelper.GetRangeDate(dt, lastDate);
 
-            CultureInfo ci = new CultureInfo("fr-FR");
-
-            string monthName = dt.ToString("MMMM", ci);
+            string monthName = dt.ToString("MMMM");
 
             if (String.IsNullOrEmpty(outPath))
                 outPath = $"{AppDomain.CurrentDomain.BaseDirectory}Suivi_Activite_Mensuel_{monthName}.xlsx";
@@ -90,7 +90,7 @@ namespace SacEtRit
                             worksheet.Cells[weekCell].Value = $"S{week}";
                         }
 
-                        worksheet.Cells[I, (int)dt.DayOfWeek+1].Value = $"{dt.ToString("dddd", ci).ToUpper()} {dt.Day}";
+                        worksheet.Cells[I, (int)dt.DayOfWeek+1].Value = $"{dt.ToString("dddd").ToUpper()} {dt.Day}";
 
                         bool isHolyday = holydays.Contains(dt);
 
