@@ -102,7 +102,8 @@ namespace SacEtRit
                         worksheet.Cells[$"H{I + 2}"].Value = $"MI: {week}";
                         worksheet.Cells[$"H{I + 3}"].Style.Numberformat.Format = "[H]\"h\"MM";
 
-                        ++totalJours;
+                        if(!isHolyday)
+                            ++totalJours;
                     }
 
                     dt = dt.AddDays(1);
